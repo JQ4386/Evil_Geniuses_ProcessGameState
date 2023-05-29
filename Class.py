@@ -49,7 +49,6 @@ class ProcessGameState:
             'is_inside' (boolean) is determined using the .is_inside_polygon method, which uses odd/even raycasting and runs in O(V) time (where V is the number of vertices of the specified region). As V is usually a relatively small number, this is trivial in most cases (practically equivalent to O(1)), but can increase if the number of vertices in the region rises significantly. This data is appended to the main dataframe. Used for 1b).
             'weapon_classes' (list) is determined by applying a lambda function to extract the 'weapon_class' information from the 'inventory column'. This data is appended to the main dataframe. Used for 1c) and 2b).
         '''
-        
         #1b)
         def is_inside_polygon(row):
             '''
@@ -71,7 +70,7 @@ class ProcessGameState:
         '''
         Since it wasn't specified what a 'common strategy' is, the results from the filtered dataframe were interpreted manually. 
         '''        
-        #Filters the dataframe to only include players who are on Team2 playing as T and is inside the chokepoint. 
+        #Filters the dataframe to only include players who are on 'team' playing as 'side' and is inside the chokepoint. 
         Team2TInside = self.df[(self.df['is_inside'] == True) & (self.df['team'] == team) & (self.df['side'] == side)]
         
         #Duplicate values of same players in the same round are dropped (as they do not provide information on whether the team entered via the chokepoint that round)
@@ -86,9 +85,10 @@ class ProcessGameState:
         'has_target_weapons' (boolean) is determined by applying a lambda function to examine if any of the target_weapons appears in the 'weapon_classes' column.
         '''
 
+        #Appends 'has_target_weapons' to dataframe
         self.df['has_target_weapons'] = self.df['weapon_classes'].apply(lambda x: any(weapon in x for weapon in target_weapons))
 
-        #Filters the dataframe to only includes players who are on Team2 playing as T, is inside BombsiteB and has either a Rifle or a SMG in their inventory 
+        #Filters the dataframe to only includes players who are on 'team' playing as 'side', is inside 'area' and has 'target_weapons' in their inventory 
         df_filtered = self.df[(self.df['team'] == team) & (self.df['side'] == side) & (self.df['area_name'] == area) & (self.df['has_target_weapons'] == True)]
         df_filtered = df_filtered.sort_values('tick')
         
@@ -112,7 +112,7 @@ class ProcessGameState:
         sns (seaborn) is used here because it has signifcantly optimized performance compared to other methods e.g. scipy.stats.gaussian_kde.
         '''
         
-        #Filters the dataframe to only includes players who are on Team2 playing as CT and is inside BombsiteB 
+        #Filters the dataframe to only includes players who are on 'team' playing as 'side' and is inside 'area' 
         df_filtered = self.df[(self.df['team']==team) & (self.df['side']==side) & (self.df['area_name']==area) & (self.df['is_alive'] == True)]
         
         #Creates a kde jointplot (as a heatmap) 
@@ -127,11 +127,10 @@ z_range = (285, 421)
 path_to_parquet = '/Users/jq4386/Desktop/Evil Geniuses /game_state_frame_data.parquet'
 
 #Output (functions are generalized, with inputs specified by assignment)
-
 Output = ProcessGameState(path_to_parquet, vertices, z_range)
+
 Output.enterChokePoint(team='Team2', side='T')
 Output.averageTimer(team='Team2', side='T', target_weapons=['Rifle', 'SMG'], area='BombsiteB', min_players=2)
-#Question 2c)
 Output.create_heatmap(team='Team2', side='CT', area='BombsiteB')
         
         
