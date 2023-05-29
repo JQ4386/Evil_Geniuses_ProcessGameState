@@ -1,0 +1,11 @@
+Written Responses
+
+2a) After applying appropriate filters, it is evident that Team2 only entered the specified choke point in a single round (R16) with 2 players, and thus it is not a common strategy.
+
+2b) The average timer that Team2 on the T (terrorist) side enters “BombsiteB” with at least 2 rifles or SMGs is 29.666666666666668 seconds.
+
+2c) The heat-map output was committed to the repository. 
+
+3) To enable coaches and staff to use the to acquire a desired output with coding, a reasonable solution would be to implement a user-friendly graphical interface. This could be a code-free web app that integrates the functionality of the python class, with inputs into the methods being textboxes or drop-down menus. After receiving the inputs, the data will be processed in the backend, after which the desired results would be presented to the user.
+Developing a basic web app to fulfill these requirements within the 1-week timeframe is very reasonable, especially if the implementor can fluently use a web development framework such as Flask, Django or React.
+
