@@ -45,14 +45,14 @@ class ProcessGameState:
 
     def _preprocess(self):
         '''
-        Simple processing to perform some calculations and to append relevant data to the main dataframe.
+        *Simple processing to perform some calculations and to append relevant data to the main dataframe.
             'is_inside' (boolean) is determined using the .is_inside_polygon method, which uses odd/even raycasting and runs in O(V) time (where V is the number of vertices of the specified region). As V is usually a relatively small number, this is trivial in most cases (practically equivalent to O(1)), but can increase if the number of vertices in the region rises significantly. This data is appended to the main dataframe. Used for 1b).
             'weapon_classes' (list) is determined by applying a lambda function to extract the 'weapon_class' information from the 'inventory column'. This data is appended to the main dataframe. Used for 1c) and 2b).
         '''
         #1b)
         def is_inside_polygon(row):
             '''
-            A helper function to determine if a point is inside the specified region, factoring the z-axis as well. 
+            *A helper function to determine if a point is inside the specified region, factoring the z-axis as well. 
             '''
             point = (row['x'], row['y'])
             return self.area.contains_point(point) & (row['z'] >= self.z_range[0]) & (row['z'] <= self.z_range[1]) 
@@ -66,9 +66,17 @@ class ProcessGameState:
     #Solutions for Q2a), b) and c) are implemented as methods in the class
 
     #Q2a)
-    def enterChokePoint(self, team, side):
+    def enterChokePoint(self, team:str, side:str):
         '''
-        Since it wasn't specified what a 'common strategy' is, the results from the filtered dataframe were interpreted manually. 
+        Parameters:
+        ----------
+        team : str
+            The team of the player ('Team1'/'Team2').
+        side : str
+            The side the player is playing on ('T'/'CT').
+            
+            
+        *Since it wasn't specified what a 'common strategy' is, the results from the filtered dataframe were interpreted manually. 
         '''        
         #Filters the dataframe to only include players who are on 'team' playing as 'side' and is inside the chokepoint. 
         Team2TInside = self.df[(self.df['is_inside'] == True) & (self.df['team'] == team) & (self.df['side'] == side)]
@@ -80,9 +88,23 @@ class ProcessGameState:
         return subset
 
     #Q2b)
-    def averageTimer(self, team, side, target_weapons, area, min_players):
+    def averageTimer(self, team:str, side:str, target_weapons:list, area:str, min_players:int):
         '''
-        'has_target_weapons' (boolean) is determined by applying a lambda function to examine if any of the target_weapons appears in the 'weapon_classes' column.
+        Parameters:
+        ----------
+        team : str
+            The team of the player ('Team1'/'Team2').
+        side : str
+            The side the player is playing on ('T'/'CT').
+        target_weapons : list
+            A list containing strings of target weapon types e.g. ['Rifle', 'SMG'].
+        area : str
+            The area the player is currently in e.g. 'BombsiteB'.
+        min_players : int
+            Minimum number of players in team required to meet the requirements.
+        
+
+        *'has_target_weapons' (boolean) is determined by applying a lambda function to examine if any of the target_weapons appears in the 'weapon_classes' column.
         '''
 
         #Appends 'has_target_weapons' to dataframe
@@ -106,9 +128,18 @@ class ProcessGameState:
         return averageTimer
 
     #Q2c)
-    def create_heatmap(self, team, side, area):
+    def create_heatmap(self, team:str, side:str, area:str):
         '''
-        A KDE (Kernel Density Estimation) jointplot was chosen here instead of a regular heatmap/kdeplot to give an additional axes-specific representation of the distribution of player locations. This provides valuable insight on angle-based tactics such as peaking, hard-scoping, sniping etc.
+        Parameters:
+        ----------
+        team : str
+            The team of the player ('Team1'/'Team2').
+        side : str
+            The side the player is playing on ('T'/'CT').
+        area : str
+            The area the player is currently in e.g. 'BombsiteB'.
+        
+        *A KDE (Kernel Density Estimation) jointplot was chosen here instead of a regular heatmap/kdeplot to give an additional axes-specific representation of the distribution of player locations. This provides valuable insight on angle-based tactics such as peaking, hard-scoping, sniping etc.
         sns (seaborn) is used here because it has signifcantly optimized performance compared to other methods e.g. scipy.stats.gaussian_kde.
         '''
         
